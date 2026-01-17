@@ -9,7 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  provider: ^6.1.1        # For the "Brain" (State Management)
+  hive: ^2.2.3            # For the "Notebook" (Database)
+  hive_flutter: ^1.1.0    # Helper for Hive
+  geolocator: ^10.1.0     # For GPS
+  image_picker: ^1.0.7    # For Camera
+  flutter_local_notifications: ^16.3.2 # For Notifications
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
