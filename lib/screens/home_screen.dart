@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/spot_provider.dart';
+import 'add_spot_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -29,10 +32,13 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // print('Add button clicked');
+        // Navigate to the Add screen
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (ctx) => const AddSpotScreen()),
+          );
         },
-        tooltip: 'Add Spot',
-        child: const Icon(Icons.add),
+        // REQUIREMENT: Platform-aware design choice
+        child: Icon(Platform.isIOS ? CupertinoIcons.add : Icons.add),
       ),
     );
   }

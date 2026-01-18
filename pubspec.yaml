@@ -14,7 +14,7 @@ dependencies:
   hive_flutter: ^1.1.0    # Helper for Hive
   geolocator: ^10.1.0     # For GPS
   image_picker: ^1.0.7    # For Camera
-  flutter_local_notifications: ^16.3.2 # For Notifications
+  flutter_local_notifications: ^17.2.2 # For Notifications
   
 dev_dependencies:
   flutter_test:
