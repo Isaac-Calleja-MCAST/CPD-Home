@@ -22,8 +22,14 @@ class HomeScreen extends StatelessWidget {
             : ListView.builder(
                 itemCount: spotProvider.items.length,
                 itemBuilder: (ctx, i) => ListTile(
-                  leading: const CircleAvatar(
-                    child: Icon(Icons.place), // Placeholder for image later
+                  leading: CircleAvatar(
+                    // If the image path is empty, show icon. Otherwise, show the photo.
+                    backgroundImage: spotProvider.items[i].imagePath.isEmpty
+                        ? null
+                        : FileImage(File(spotProvider.items[i].imagePath)),
+                    child: spotProvider.items[i].imagePath.isEmpty
+                        ? const Icon(Icons.pin_drop)
+                        : null,
                   ),
                   title: Text(spotProvider.items[i].title),
                   subtitle: Text('Lat: ${spotProvider.items[i].latitude}'),
@@ -32,10 +38,9 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-        // Navigate to the Add screen
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (ctx) => const AddSpotScreen()),
-          );
+          // Navigate to the Add screen
+          Navigator.of(context,).push(
+            MaterialPageRoute(builder: (ctx) => const AddSpotScreen()));
         },
         // REQUIREMENT: Platform-aware design choice
         child: Icon(Platform.isIOS ? CupertinoIcons.add : Icons.add),
