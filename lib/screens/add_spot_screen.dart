@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/spot_provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AddSpotScreen extends StatefulWidget {
   const AddSpotScreen({super.key});
@@ -15,6 +16,8 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
   // This controller captures the users input text
   final _titleController = TextEditingController();
   File? _pickedImage; // This stores the photo
+  double? _latitude; // This stores the latitude
+  double? _longitude; // This stores the longitude
 
   // camera logic
   Future<void> _takePicture() async {
@@ -32,12 +35,35 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
     });
   }
 
+  // location logic
+  Future<void> _getLocation() async {
+    // 1. Check if location services are enabled on the phone
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+
+    // 2. Ask the user for permission
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+
+    // 3. Get the actual coordinates
+    final position = await Geolocator.getCurrentPosition();
+    
+    setState(() {
+      _latitude = position.latitude;
+      _longitude = position.longitude;
+    });
+  }
+
+
   void _saveSpot() {
     // To not save if the title is empty
-    if (_titleController.text.isEmpty || _pickedImage == null) {
+    if (_titleController.text.isEmpty || _pickedImage == null || _latitude == null || _longitude == null) {
       // show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a title and a photo!')),
+        const SnackBar(content: Text('Please provide a title, a photo, and location!')),
       );
       return;
     }
@@ -47,8 +73,8 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
     Provider.of<SpotProvider>(context, listen: false).addSpot(
       _titleController.text,
       _pickedImage!.path, // Image path
-      69.69, // Fake Latitude
-      69.69, // Fake Longitude
+      _latitude!, // Latitude
+      _longitude!, // Longitude
     );
 
     // Close this screen and go back to the list
@@ -72,12 +98,11 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
               ),
             ),
             const SizedBox(height: 15),
-
+            // Image Preview area
             Container(
               width: double.infinity,
               height: 200,
-              decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.grey),
+              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.grey),
               ),
               child: _pickedImage != null
                   ? Image.file(
@@ -91,6 +116,16 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
               onPressed: _takePicture,
               icon: const Icon(Icons.camera),
               label: const Text('Take Photo'),
+            ),
+            const Divider(),
+            // GPS Area
+            Text(_latitude == null 
+                ? 'No Location Selected' 
+                : 'Location: ${_latitude!.toStringAsFixed(4)}, ${_longitude!.toStringAsFixed(4)}'), // 4 decimal places
+            TextButton.icon(
+              onPressed: _getLocation,
+              icon: const Icon(Icons.location_on),
+              label: const Text('Get Current Location'),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
