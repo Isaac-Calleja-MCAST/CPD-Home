@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283108575301",
+    "project_id": "malta-spot-saver",
+    "storage_bucket": "malta-spot-saver.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283108575301:android:b4e6d7991443c2b9273b2c",
+        "android_client_info": {
+          "package_name": "com.example.malta_spot_saver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgYjRyXo9YTH6txIYMpmSSsr61AtXLpbY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

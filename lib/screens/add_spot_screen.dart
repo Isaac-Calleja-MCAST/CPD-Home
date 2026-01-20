@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../main.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class AddSpotScreen extends StatefulWidget {
   const AddSpotScreen({super.key});
@@ -90,7 +91,7 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
       return;
     }
 
-    // to add the spot
+    // to save the spot
     // For now, empty strings for images and fake numbers for GPS
     Provider.of<SpotProvider>(context, listen: false).addSpot(
       _titleController.text,
@@ -99,6 +100,13 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
       _longitude!, // Longitude
     );
     
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'spot_saved',
+      parameters: {
+        'spot_name': _titleController.text,
+      },
+    );
+
     // show notification
     await _showNotification(_titleController.text);
 

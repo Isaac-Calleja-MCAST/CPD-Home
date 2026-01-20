@@ -15,6 +15,8 @@ dependencies:
   geolocator: ^10.1.0     # For GPS
   image_picker: ^1.0.7    # For Camera
   flutter_local_notifications: ^17.2.2 # For Notifications
+  firebase_core: ^4.4.0
+  firebase_analytics: ^12.1.1
   
 dev_dependencies:
   flutter_test:
