@@ -32,7 +32,7 @@ class HomeScreen extends StatelessWidget {
                         : null,
                   ),
                   title: Text(spotProvider.items[i].title),
-                  subtitle: Text('Lat: ${spotProvider.items[i].latitude}'),
+                  subtitle: Text('Lati: ${spotProvider.items[i].latitude.toStringAsFixed(4)}, Long: ${spotProvider.items[i].longitude.toStringAsFixed(4)}'),
                 ),
               ),
       ),
