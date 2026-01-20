@@ -4,6 +4,8 @@ import '../providers/spot_provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../main.dart';
 
 class AddSpotScreen extends StatefulWidget {
   const AddSpotScreen({super.key});
@@ -25,7 +27,7 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
     // This opens the native phone camera
     final imageFile = await picker.pickImage(
       source: ImageSource.camera,
-      maxWidth: 600, // Optimize for performance (E&C3 requirement), 
+      maxWidth: 600, // Optimize for performance (E&C3 requirement),
     ); // 600px because it looks good as an icon and file sizes much smaller than the original.
 
     if (imageFile == null) return;
@@ -50,20 +52,40 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
 
     // 3. Get the actual coordinates
     final position = await Geolocator.getCurrentPosition();
-    
+
     setState(() {
       _latitude = position.latitude;
       _longitude = position.longitude;
     });
   }
 
+  Future<void> _showNotification(String title) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'malta_spots_channel',
+          'Spot Notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Spot Saved!',
+      'Successfully added "$title" to your collection.',
+      const NotificationDetails(android: androidDetails),
+    );
+  }
 
-  void _saveSpot() {
+  void _saveSpot() async {
     // To not save if the title is empty
-    if (_titleController.text.isEmpty || _pickedImage == null || _latitude == null || _longitude == null) {
+    if (_titleController.text.isEmpty ||
+        _pickedImage == null ||
+        _latitude == null ||
+        _longitude == null) {
       // show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a title, a photo, and location!')),
+        const SnackBar(
+          content: Text('Please provide a title, a photo, and location!'),
+        ),
       );
       return;
     }
@@ -76,7 +98,11 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
       _latitude!, // Latitude
       _longitude!, // Longitude
     );
+    
+    // show notification
+    await _showNotification(_titleController.text);
 
+    if (!mounted) return; // added this line because of an 'async gap' for context
     // Close this screen and go back to the list
     Navigator.of(context).pop();
   }
@@ -102,7 +128,8 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
             Container(
               width: double.infinity,
               height: 200,
-              decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.grey),
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.grey),
               ),
               child: _pickedImage != null
                   ? Image.file(
@@ -119,9 +146,11 @@ class _AddSpotScreenState extends State<AddSpotScreen> {
             ),
             const Divider(),
             // GPS Area
-            Text(_latitude == null 
-                ? 'No Location Selected' 
-                : 'Location: ${_latitude!.toStringAsFixed(4)}, ${_longitude!.toStringAsFixed(4)}'), // 4 decimal places
+            Text(
+              _latitude == null
+                  ? 'No Location Selected'
+                  : 'Location: ${_latitude!.toStringAsFixed(4)}, ${_longitude!.toStringAsFixed(4)}',
+            ), // 4 decimal places
             TextButton.icon(
               onPressed: _getLocation,
               icon: const Icon(Icons.location_on),
